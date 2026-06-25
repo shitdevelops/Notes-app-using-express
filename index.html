@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="Create">
+      <h1>Notes App</h1>
+      <label for="title">Title</label>
+      <input id="title" placeholder="Note title" />
+      <label for="body">Body</label>
+      <textarea id="body" placeholder="Write your note here..."></textarea>
+      <button id="btn">Add Note</button>
+    </div>
+    <div id="Result">
+      <h2>My Notes</h2>
+    </div>
+    <script>
+      const title = document.getElementById("title");
+      const body = document.getElementById("body");
+      const btn = document.getElementById("btn");
+
+      async function deleteNote(id) {
+        const res = await fetch(`/notes/${id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+        show_notes(data);
+      }
+
+      function showEdit(id, currentTitle, currentBody) {
+        document.getElementById("edit-" + id).style.display = "block";
+      }
+
+      function hideEdit(id) {
+        document.getElementById("edit-" + id).style.display = "none";
+      }
+
+      async function updateNote(id) {
+        const newTitle = document.getElementById("edit-title-" + id).value;
+        const newBody = document.getElementById("edit-body-" + id).value;
+        const res = await fetch(`/notes/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newTitle, body: newBody }),
+        });
+        const data = await res.json();
+        show_notes(data);
+      }
+
+      function show_notes(data) {
+        const res = document.getElementById("Result");
+        res.innerHTML = "<h2>My Notes</h2>";
+        res.insertAdjacentHTML(
+          "beforeend",
+          data
+            .map((obj) => {
+              return `
+            <div id="note-${obj.id}">
+    <h3>${obj.title}</h3>
+    <p>${obj.body}</p>
+    <button class="btn-delete" onclick="deleteNote(${obj.id})">Delete</button>
+    <button class="btn-edit" onclick="showEdit(${obj.id})">Edit</button>
+    <div id="edit-${obj.id}" style="display:none" class="edit-form">
+      <input id="edit-title-${obj.id}" value="${obj.title}" />
+      <textarea id="edit-body-${obj.id}">${obj.body}</textarea>
+      <button class="btn-save" onclick="updateNote(${obj.id})">Save</button>
+      <button class="btn-cancel" onclick="hideEdit(${obj.id})">Cancel</button>
+    </div>
+  </div>
+            `;
+            })
+            .join(""), // was missing
+        );
+      }
+
+      btn.addEventListener("click", async () => {
+        const res = await fetch("/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: title.value, body: body.value }),
+        });
+        const data = await res.json();
+        show_notes(data);
+      });
+
+      // load notes on page start
+      async function loadNotes() {
+        const res = await fetch("/notes");
+        const data = await res.json();
+        show_notes(data);
+      }
+      loadNotes();
+    </script>
+  </body>
+</html>
