@@ -13,10 +13,30 @@ body {
   margin: 0 auto;
 }
 
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
 h1 {
   font-size: 2rem;
-  margin-bottom: 20px;
   color: #222;
+}
+
+#logout-btn {
+  background: #ff4d4d;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#logout-btn:hover {
+  background: #e03e3e;
 }
 
 h2 {

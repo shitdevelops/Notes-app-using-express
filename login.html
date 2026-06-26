@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="login_style.css" />
+  </head>
+  <body>
+    <div id="auth">
+      <h1>Notes App</h1>
+
+      <div id="login-form">
+        <h2>Login</h2>
+        <label for="login-username">Username</label>
+        <input id="login-username" placeholder="Enter username" />
+        <label for="login-password">Password</label>
+        <input
+          id="login-password"
+          type="password"
+          placeholder="Enter password"
+        />
+        <button id="login-btn">Login</button>
+        <p id="login-error"></p>
+        <p>
+          Don't have an account? <a href="#" id="show-register">Register</a>
+        </p>
+      </div>
+
+      <div id="register-form" style="display: none">
+        <h2>Register</h2>
+        <label for="reg-username">Username</label>
+        <input id="reg-username" placeholder="Choose a username" />
+        <label for="reg-password">Password</label>
+        <input
+          id="reg-password"
+          type="password"
+          placeholder="Choose a password"
+        />
+        <button id="register-btn">Register</button>
+        <p id="register-error"></p>
+        <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+    </div>
+    <script>
+      const login_btn = document.getElementById("login-btn");
+      const log_username = document.getElementById("login-username");
+      const log_password = document.getElementById("login-password");
+      const login_error = document.getElementById("login-error");
+      const register_btn = document.getElementById("register-btn");
+      const reg_username = document.getElementById("reg-username");
+      const reg_password = document.getElementById("reg-password");
+      login_btn.addEventListener("click", async () => {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: log_username.value,
+            password: log_password.value,
+          }),
+        });
+        const data = await res.json();
+        if (data.error) {
+          login_error.textContent = data.error;
+          return;
+        }
+        window.location.href = "/";
+      });
+      register_btn.addEventListener("click", async () => {
+        const res = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: reg_username.value,
+            password: reg_password.value,
+          }),
+        });
+        const data = await res.json();
+        if (data.error) {
+          document.getElementById("register-error").textContent = data.error;
+          return;
+        }
+        window.location.href = "/";
+      });
+      document.getElementById("show-register").addEventListener("click", () => {
+        document.getElementById("register-form").style.display = "block";
+        document.getElementById("login-form").style.display = "none";
+      });
+      document.getElementById("show-login").addEventListener("click", () => {
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("register-form").style.display = "none";
+      });
+    </script>
+  </body>
+</html>

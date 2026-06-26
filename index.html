@@ -8,7 +8,10 @@
   </head>
   <body>
     <div id="Create">
-      <h1>Notes App</h1>
+      <nav>
+        <h1>Notes App</h1>
+        <button id="logout-btn">Logout</button>
+      </nav>
       <label for="title">Title</label>
       <input id="title" placeholder="Note title" />
       <label for="body">Body</label>
@@ -91,9 +94,19 @@
       // load notes on page start
       async function loadNotes() {
         const res = await fetch("/notes");
+        if (res.status === 401) {
+          window.location.href = "/login";
+          return;
+        }
         const data = await res.json();
         show_notes(data);
       }
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", async () => {
+          await fetch("/logout");
+          window.location.href = "/login";
+        });
       loadNotes();
     </script>
   </body>
